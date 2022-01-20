@@ -387,3 +387,10 @@ class HomeController extends AbstractController
 }
 ```
 Başka bir değişiklik yapmadan [Bu link'e](http://localhost:8000/home) tıklayarak, veritabanından gelen verinizi görebilirsiniz.
+
+Auto-Wiring, Repository ve birçok işlevsel özellik sunar Symfony.
+Orta büyük projelerde işleri çok kolaylaştırır.
+
+Daha anlatılacak, çok fazla özellik var. Hepsini anlatmaya başlasam bu yazı büyük ihtimalle
+bir kitapçık olur.  [Bu link'e](https://symfony.com/doc/) tıklayarak Symfony'nin dokümantasyonuna
+ulaşabilirsiniz.
