@@ -52,7 +52,7 @@ php -S localhost:8000 -t public
 ```
 Bu komut public/ dizini altındaki `index.php` dosyasını çalıştırır.
 
-Aslında bu işlemleri aşırı derecede kolaylaştıran bir [Symfony ClI](https://symfony.com/projects) isimli bir aracımız var. Link'e tıklayarak kurabilirsiniz.
+Aslında bu işlemleri aşırı derecede kolaylaştıran bir [Symfony ClI](https://symfony.com/download) isimli bir aracımız var. Link'e tıklayarak kurabilirsiniz.
 
 ### Oluşturulan klasörleri ve dosyaları inceleyelim.
 
@@ -111,4 +111,39 @@ Birşey belki dikkatiniz çekmiştir.Annatationlar! Symfony framework ile rota o
 Gidip başka bir dosyada rota ayarlamanıza hiç gerek yok. Ama ben bu angarya işlemi isterim diyorsanız `YAML`, `PHP`veya `XML` formatında rotalarınız oluşturabilirsiniz.
 Bunları daha sonra `config/` klasörünü incelerken anlatacağım.
 
-Annatation'ınızın içinde bir `Route` annotation'ı var. Bu annotation'ın içinde bir `name` parametresi var. Bu parametre `home` olarak tanımlanmıştır. Bu parametreyi kullanarak bir URL'i oluşturabiliriz.
+Yorum satırlarımız içinde bir `@Route("/home", name="home")` annotation'ı var. Bu annotation'ın içinde bir `name` parametresi var. Bu parametre `home` olarak isimlendirilmiştir. Bu özelliği kullanarak `URL` oluşturabilirsiniz. Bunu daha sonra anlatacağım. Çok seveceğinize eminim.
+
+Return edilen `$this->render()` fonksiyonu, `templates/home/index.html.twig` dosyasının içine gidip `controller_name` değişkenini oluşturur. Bu yöntemle, `Array`, `JSON` ve `İstediğiniz` tipte değer gönderebilirsiniz. `Twig` template engine bunları işlemek için bize bir sürü araç sağlar.
+
+Basitçe kod yazmadan `Controller`'ımızı inceledik. Şimdi çok kullanmayı çok sevdiğim `Twig` ile yazılmış 
+`templates/home/index.html.twig` dosyasını inceleyelim.
+
+```	
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+</div>
+{% endblock %}
+```	
+Yazıya sığması için kodları biraz sadeleştirerek buraya ekledim, şaşırmayın.
+
+`{% extends 'base.html.twig' %}` ile `base.html.twig` dosyasını kullanacağımızı belirtiyoruz. Bu dosya `templates/base.html.twig` konumunda bulunuyor, bu dosya içinde `header`,`footer` ve heryerde kulllanmak istedğimiz her `HTML` kodunu içerir. `{% extends 'base.html.twig' %}` komutu bunları miras almamızı sağlar yada `include` eder, nasıl söylemek isterseniz artık :)
+
+Diğer komutlarda benzer olarak çalışır ama şimdilik bizi ilgilendiren `{{ controller_name }}` kısmını inceleyelim. Aslında inceleme demek biraz fazla kaçar ama kısaca `Controller`'ımızdan gelen `controller_name` değişkenini enjekte eder.
+
+Oluşturulan sayfamızı inceleyelim.
+[Bu link'e](http://localhost:8000/home) tıklayın:
+![lOCALHOST/HOME](https://i.hizliresim.com/34mczzq.jpg)
+
+Böyle bir mesaj ile karşılaşmız olmanız lazım.
+
+Alt taraftaki bu araç dikkatiniz çekti mi?
+Bu `Symfony Profiler` aracı, yazılımcının uykusuz gecelerine neden olan bugları incelemek için oluşturlmuş bir debug aracıdır.
+Okumaya biraz ara verip içinde dolaşabilirsiniz. Zamanla öğrenebilirsiniz.
+![Symfony/Debug](https://i.hizliresim.com/aram7hx.jpg)
+
+
