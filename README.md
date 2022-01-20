@@ -143,7 +143,64 @@ Böyle bir mesaj ile karşılaşmız olmanız lazım.
 
 Alt taraftaki bu araç dikkatiniz çekti mi?
 Bu `Symfony Profiler` aracı, yazılımcının uykusuz gecelerine neden olan bugları incelemek için oluşturlmuş bir debug aracıdır.
-Okumaya biraz ara verip içinde dolaşabilirsiniz. Zamanla öğrenebilirsiniz.
+Okumaya biraz ara verip içinde dolaşabilirsiniz.
 ![Symfony/Debug](https://i.hizliresim.com/aram7hx.jpg)
 
+Ne kadar incelediniz bilmiyorum ama proje geliştirirken çok kullanacağınza yemin edebilirim :)
 
+### Database ve Doctrine ORM
+
+Symfony Framework verileri ve veritabanın `Doctrine ORM` ile yönetir. Verileri ise `Entity` isimli PHP objeleri olarak saklar.
+
+Şu iki cümle o kadar çok şey içeriyor ki hepsini anlatmama imkan yok. Mesela `Doctrine ORM` bize o kadar çok esneklik sağlıyor ki bir satırda istediğimiz veritabanını kullanabilir veya daha sonrada istediğimiz veritabanına sorunsuzca geçiş yapabiliriz.
+
+Ee nasıl yapıcağız diye soruyorsanız, veritabınımızı `.env` dosyasına şu kodu ekleyelim.
+```	
+DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
+```
+Database olarak `sqlite` veritabanı kullanacağız. Yaptığımız değikliği inceleyin ve  `.env` dosyanızda aynısını yapabilirsiniz.
+
+Şimdi veritanını oluşturmadan bir tane `Entity` oluşturalım.
+
+```
+php bin/console make:entity Home
+```
+Sonra şu adımları yapalım. Ben buraya birkaç türkçe yorum ekleyeceğim sizin terminalinizde bu yorumlar olmayacak.
+
+```	
+
+ created: src/Entity/Home.php
+ created: src/Repository/HomeRepository.php
+ 
+ Entity generated! Now let's add some fields!
+ You can always add more fields later manually or by re-running this command.
+
+Bir değer ismi belirlemenizi istiyor. Tablodaki sütün adına denk geliyor.
+ New property name (press <return> to stop adding fields):
+ > Title
+
+Verinin hangi tipte olacağını belirleyen bir seçim yapmanız isteniyor.
+ Field type (enter ? to see all types) [string]:
+ > string
+
+ Field length [255]:
+ > 255
+
+Verinin `nullable` olup olmadığını belirleyen bir seçim yapmanız isteniyor.
+ Can this field be null in the database (nullable) (yes/no) [no]:
+ > no
+
+Entity dosyamız bu şekilde oluşturulacak.
+ updated: src/Entity/Home.php
+
+Daha fazla değer eklemek istiyorsanız devam edebilirsiniz, şimdilik ihtiyacımız yok. `Enter` tuşuna basarak işlemi bitirin.
+ Add another property? Enter the property name (or press <return> to stop adding fields):
+ >
+
+
+ 
+  Success! 
+ 
+`Migration` özelliği işlevsel bir özelliktir, birazdan anlatacağım.
+ Next: When you're ready, create a migration with php bin/console make:migration
+ ```
