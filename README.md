@@ -204,3 +204,186 @@ Daha fazla değer eklemek istiyorsanız devam edebilirsiniz, şimdilik ihtiyacı
 `Migration` özelliği işlevsel bir özelliktir, birazdan anlatacağım.
  Next: When you're ready, create a migration with php bin/console make:migration
  ```
+
+ Şu komutları sırasıyla çalıştırın.
+
+ ```
+ php bin/console doctrine:database:create
+ php bin/console make:migration
+ php bin/console doctrine:migrations:migrate
+```
+
+```
+[notice] finished in 150.7ms, used 18M memory, 1 migrations executed, 1 sql queries
+```
+Eğer bu mesajı gördüyseniz, veritabanı oluşturuldu.
+Migration ile veritabınızın içinde bir tablo oluşturdu.
+Tebrikler, herşey yolunda demektir.
+<br />
+`src/Entity/Home.php` dosyasını inceleyelim.
+```
+<?php
+
+namespace App\Entity;
+
+use App\Repository\HomeRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass=HomeRepository::class)
+ */
+class Home
+{
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $Title;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->Title;
+    }
+
+    public function setTitle(string $Title): self
+    {
+        $this->Title = $Title;
+
+        return $this;
+    }
+}
+```
+Symfony yada daha doğrusu `Doctrine ORM` tüm herşeyi objeler halinde tutar, bu da biz geliştiricilere büyük esneklik sağlar.
+
+Bu dosyayı verileri veritanımıza eklerken kullanacağız o yüzden tekrardan:
+<br />
+ `src/Controller/HomeController.php` dosyasına gidelim ve ilk kodumuzu yazalım.
+```
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Home;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class HomeController extends AbstractController
+{
+    /**
+     * @Route("/home", name="home")
+     */
+    public function index(ManagerRegistry $manager): Response
+    {   /**
+         * Home isimli Entity sınıfımızı çağırıyoruz.
+         */
+        $homeEntity = new Home();
+         /**
+         * setTitle metodu ile title değerini belirliyoruz.
+         */
+        $homeEntity->setTitle('My Name is HomeController');
+
+        /**
+         * Entity Manager'ımızı çağırıyoruz.
+         */
+        $em = $manager->getManager();
+
+        /**
+         * Verilerimizi persist ediyoruz.
+         */
+        $em->persist($homeEntity);
+
+        /**
+         * Verileri database'e kaydediyoruz.
+         */
+        $em->flush(); 
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'HomeController',
+        ]);
+    }
+}
+
+```	
+Yorum satırları ile tüm işemi açıkladım, tekrar etmeye gerek duymuyorum. Tüm bu işlem sonunda veriniz veritanına kaydelir.
+
+`var/data.db` Sqlite dosyası içinde verilerinizi inceleyebilirsiniz.
+
+Şimdi kaydetğimiz verileri görmek için biraz kod yazalım.
+
+```
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Home;
+use App\Repository\HomeRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class HomeController extends AbstractController
+{
+    /**
+     * @Route("/home", name="home")
+     */
+    public function index(ManagerRegistry $manager, HomeRepository $homeRepository): Response
+    {   /**
+         * Home isimli Entity sınıfımızı çağırıyoruz.
+         */
+        $homeEntity = new Home();
+         /**
+         * setTitle metodu ile title değerini belirliyoruz.
+         */
+        $homeEntity->setTitle('My Name is HomeController');
+
+        /**
+         * Entity Manager'ımızı çağırıyoruz.
+         */
+        $em = $manager->getManager();
+
+        /**
+         * Verilerimizi persist ediyoruz.
+         */
+        $em->persist($homeEntity);
+
+        /**
+         * Verileri database'e kaydediyoruz.
+         */
+        $em->flush(); 
+
+        /**
+         * HomeRepository sınıfımızı Symfony'nin
+         * Auto-Wiring'i ile 'index()' içinde çağırıyoruz.
+         * Buna dikkat edin!
+         * 
+         * Repository sınıfı Doctrine ile iletşime geçen basit
+         * bir sınıftır. Ek ayarlar yapmamıza olanak sağlar.
+         * 
+         * $homeRepository->find(1) ile veritabanından
+         * id 1 bir olan veriyi çekiyoruz.
+         */
+        $homeRepository = $homeRepository->find(1);
+        return $this->render('home/index.html.twig', [
+            /**
+             * 'controller_name' değişkenine Title 
+             *  değerini atıyoruz. 
+             */
+            'controller_name' => $homeRepository->getTitle(),
+        ]);
+    }
+}
+```
+Başka bir değişiklik yapmadan [Bu link'e](http://localhost:8000/home) tıklayarak, veritabanından gelen verinizi görebilirsiniz.
